@@ -22,7 +22,7 @@ For each domain your manager sends you, the tool:
 
 ## Setup
 
-**Requirements:** Python 3.9+, Anthropic API key from https://console.anthropic.com
+**Requirements:** Python 3.9+, OpenAI API key from https://openai.com/api/
 
 ```bash
 cd geekflare-opportunity-finder
