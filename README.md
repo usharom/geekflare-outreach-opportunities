@@ -42,8 +42,8 @@ Open **http://localhost:5050** in your browser.
 
 ## How to use
 
-1. Paste your Anthropic API key
-2. Paste the domain list exactly as your manager sends it — bullets `•`, commas, newlines — all formats work
+1. Paste your OpenAI API key
+2. Paste the domain list separated by — bullets `•`, commas, newlines — all formats work
 3. Click **Find Opportunities**
 4. Watch the live log as the agent works through each domain
 5. Filter by Strong Fit, GF AI only, GF API only
