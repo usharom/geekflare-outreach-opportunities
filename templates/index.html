@@ -114,6 +114,21 @@ textarea { min-height: 200px; line-height: 1.6; }
 .run-btn:hover { opacity: .87; }
 .run-btn:active { transform: scale(.98); }
 .run-btn:disabled { opacity: .35; cursor: not-allowed; }
+.reset-btn {
+  width: 100%;
+  padding: 11px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--rim);
+  border-radius: 8px;
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: border-color .15s, color .15s;
+}
+.reset-btn:hover { border-color: var(--text); color: var(--text); }
 
 /* PROGRESS */
 .progress-block { display: none; }
@@ -301,7 +316,7 @@ textarea { min-height: 200px; line-height: 1.6; }
   <!-- LEFT -->
   <div class="left-panel">
     <div class="panel-section">
-      <label class="label">OpenAI API Key</label>
+      <label class="label">OpenAI API Key (starts with sk-...)</label>
       <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off"/>
       <p class="hint">Kept in memory only. Never written to disk.</p>
     </div>
@@ -311,6 +326,7 @@ textarea { min-height: 200px; line-height: 1.6; }
       <textarea id="domainInput" placeholder="goodcall.com&#10;jivochat.com&#10;cloudways.com&#10;toolify.ai&#10;&#10;Paste your list here — bullets, commas, or one per line. The tool handles all formats."></textarea>
       <p class="hint">Paste domains exactly as your manager sends them. Bullets • commas, newlines — all work.</p>
       <button class="run-btn" id="runBtn" onclick="startJob()">▶ Find Opportunities</button>
+      <button class="reset-btn" id="resetSessionBtn" onclick="resetSession()" style="display:none">↺ New Session</button>
     </div>
 
     <div class="panel-section">
@@ -329,7 +345,7 @@ textarea { min-height: 200px; line-height: 1.6; }
   <div class="right-panel" id="rightPanel">
     <div class="empty-screen" id="emptyScreen">
       <div class="big">🔎</div>
-      <p>Paste your domain list, add your Anthropic key, and click <strong>Find Opportunities</strong>. The agent will autonomously search every domain and surface the right pages for you.</p>
+      <p>Paste your domain list, add your OpenAI key, and click <strong>Find Opportunities</strong>. The agent will autonomously search every domain and surface the right pages for you.</p>
     </div>
 
     <div class="results-wrap" id="resultsWrap" style="display:none">
@@ -549,6 +565,36 @@ function exportCSV() {
 }
 
 function resetBtn() {
+  const b = document.getElementById('runBtn');
+  b.disabled = false;
+  b.textContent = '▶ Find Opportunities';
+  document.getElementById('resetSessionBtn').style.display = 'block';
+}
+
+function resetSession() {
+  // Clear all state
+  jobId = null;
+  if (pollTimer) clearInterval(pollTimer);
+  allOpps = [];
+  knownDomains = new Set();
+  lastLogCount = 0;
+  currentFilter = 'all';
+
+  // Reset UI
+  document.getElementById('domainInput').value = '';
+  document.getElementById('logEntries').innerHTML = '<div class="log-entry" style="font-style:italic">Agent activity will appear here...</div>';
+  document.getElementById('progressBlock').classList.remove('show');
+  document.getElementById('pbarFill').style.width = '0%';
+  document.getElementById('pbarLabel').textContent = 'Starting...';
+  document.getElementById('headerStatus').textContent = 'Idle';
+  document.getElementById('domainBlocks').innerHTML = '';
+  document.getElementById('countBadge').textContent = '0 pages';
+  document.getElementById('resultsWrap').style.display = 'none';
+  document.getElementById('emptyScreen').style.display = 'flex';
+  document.getElementById('resetSessionBtn').style.display = 'none';
+  document.querySelectorAll('.ftab').forEach((t,i) => t.classList.toggle('on', i===0));
+
+  // Reset run button
   const b = document.getElementById('runBtn');
   b.disabled = false;
   b.textContent = '▶ Find Opportunities';
